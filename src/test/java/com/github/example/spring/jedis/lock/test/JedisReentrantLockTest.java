@@ -1,18 +1,17 @@
 package com.github.example.spring.jedis.lock.test;
 
-import java.util.concurrent.TimeUnit;
-
+import com.github.example.spring.jedis.lock.JedisLockManager;
+import com.github.example.spring.jedis.lock.Lock;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import com.github.example.spring.jedis.lock.JedisLockManager;
-import com.github.example.spring.jedis.lock.Lock;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
+import java.util.concurrent.TimeUnit;
+
 public class JedisReentrantLockTest {
-	private volatile static Lock lock;
+	private static Lock lock;
 
 	@BeforeClass
 	public static void init() {
@@ -40,18 +39,19 @@ public class JedisReentrantLockTest {
 	public void tryLock() throws InterruptedException {
 		try {
 			Assert.assertTrue(lock.tryLock());
-			System.out.println("Try acquire lock success");
+			System.out.println("1st Try acquire lock success");
 			Thread.sleep(10000);
 		} finally {
-			System.out.println("Unlock success");
 			lock.unlock();
+			System.out.println("1st Unlock success");
 		}
 		try {
 			Assert.assertTrue(lock.tryLock(1, TimeUnit.SECONDS));
+			System.out.println("2nd Try acquire lock success");
 			Thread.sleep(20000);
 		} finally {
-			System.out.println("Unlock success");
 			lock.unlock();
+			System.out.println("2nd Unlock success");
 		}
 	}
 
