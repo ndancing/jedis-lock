@@ -69,6 +69,7 @@ JedisLock lock = lockManager.getLock("lock_name");
 
 try {
     lock.lock();
+    //...
 } catch () {
     //...
 } finally {
@@ -81,7 +82,9 @@ try {
  */
 
 try {
-    lock.tryLock();
+    if (lock.tryLock()) {
+	//...
+    }
 } catch () {
     //...
 } finally {
@@ -95,7 +98,9 @@ try {
  */
 
 try {
-    lock.tryLock(1, TimeUnit.SECONDS);
+    if (lock.tryLock(1, TimeUnit.SECONDS)) {
+	//...
+    }
 } catch () {
     //...
 } finally {
