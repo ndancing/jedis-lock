@@ -53,17 +53,17 @@ class TestConfiguration {
 
 @Component
 class TestFunctions {
-    @DistributedLock(name = "test1")
+    @DistributedLock(keyFormat = "test1")
     public void fooA() {
         fooB();
     }
 
-    @DistributedLock(name = "test1")
+    @DistributedLock(keyFormat = "test1")
     public void fooB() {
         fooC();
     }
 
-    @DistributedLock(name = "test1")
+    @DistributedLock(keyFormat = "test1")
     public void fooC() {
         try {
             // Do something
@@ -73,7 +73,7 @@ class TestFunctions {
         }
     }
 
-    @DistributedLock(name = "test2")
+    @DistributedLock(keyType = DistributedLock.KeyType.ARGUMENTS, keyFormat = "test2|%s")
     public String fooD(String str) {
         try {
             // Do something

@@ -37,7 +37,7 @@ public final class DistributedLockAspect {
 			Method method = targetClass.getDeclaredMethod(methodName, types);
 			if (method.isAnnotationPresent(DistributedLock.class)) {
 				DistributedLock metadata = method.getAnnotation(DistributedLock.class);
-				Lock lock = lockManager.getLock(metadata.name());
+				Lock lock = lockManager.getLock(constructKey(metadata, joinPoint.getArgs()));
 				try {
 					if (DistributedLock.Method.LOCK.equals(metadata.method())) {
 						lock.lock();
@@ -57,5 +57,12 @@ public final class DistributedLockAspect {
 			throw e instanceof AcquireLockException ? new JedisLockException("Try again", e) : new RuntimeException(e);
 		}
 		return null;
+	}
+
+	private String constructKey(DistributedLock metaData, Object[] args) {
+		if (DistributedLock.KeyType.CONSTANT.equals(metaData.keyType())) {
+			return metaData.keyFormat();
+		}
+		return String.format(metaData.keyFormat(), args);
 	}
 }

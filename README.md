@@ -144,25 +144,25 @@ class JedisLockConfiguration {
 
     @Bean
     public JedisLockManager jedisLockManager() {
-        JedisLockManager jedisLockManager = new JedisLockManager(jedisPool(), jedisLockConfigs());
-        return jedisLockManager;
+        return new JedisLockManager(jedisPool(), jedisLockConfigs());
     }
 }
 ```
 
 Annotation Usage
 ```Java
-@DistributedLock(name = "lockName", method = DistributedLock.Method.LOCK)
+@DistributedLock(keyFormat = "lockName", method = DistributedLock.Method.LOCK)
+public void foo() {}
+
+@DistributedLock(keyType = DistributedLock.KeyType.ARGUMENTS, keyFormat = "lockName|%s", method = DistributedLock.Method.TRY_LOCK)
 public void foo(Object... args) {}
 
-@DistributedLock(name = "lockName", method = DistributedLock.Method.TRY_LOCK)
-public void foo(Object... args) {}
-
-@DistributedLock(name = "lockName", method = DistributedLock.Method.TRY_LOCK, waitTime = 1000L, timeUnit = TimeUnit.MILLISECONDS)
+@DistributedLock(keyType = DistributedLock.KeyType.ARGUMENTS, keyFormat = "lockName|%s", method = DistributedLock.Method.TRY_LOCK, waitTime = 1000L, timeUnit = TimeUnit.MILLISECONDS)
 public void foo(Object... args) {}
 ```
 
-- name: lock name
-- method: LOCK / TRY_LOCK. (It will throw exception in TRY_LOCK case if lock cannot be acquired)
+- keyType: Lock key type (CONSTANT | ARGUMENTS)
+- keyFormat: Lock key format. (Using method parameters as arguments if keyType is ARGUMENTS)
+- method: LOCK | TRY_LOCK. (It will throw exception in TRY_LOCK case if lock cannot be acquired)
 - waitTime: Try lock with waiting time
 - timeUnit: Time unit of waitTime

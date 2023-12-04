@@ -12,7 +12,14 @@ import java.util.concurrent.TimeUnit;
 @Documented
 public @interface DistributedLock {
 
-	String name();
+	enum KeyType {
+		CONSTANT,
+		ARGUMENTS
+	}
+
+	KeyType keyType() default KeyType.CONSTANT;
+
+	String keyFormat();
 
 	long waitTime() default 0L;
 
