@@ -19,21 +19,21 @@ If the used Redis configuration is Pool or JedisCluster, single-reentrant lock i
 For single Redis node (Single Pool)
 ```java
 JedisPoolConfig poolConfig = new JedisPoolConfig();
-config.setMinIdle(10);
-config.setMaxIdle(50);
-config.setMaxTotal(100);
-config.setMaxWaitMillis(1000);
+poolConfig.setMinIdle(10);
+poolConfig.setMaxIdle(50);
+poolConfig.setMaxTotal(100);
+poolConfig.setMaxWaitMillis(1000);
 	
-JedisLockManager lockManager = new JedisLockManager(new JedisPool(config, "127.0.0.1", 6379), lockConfig);
+JedisLockManager lockManager = new JedisLockManager(new JedisPool(poolConfig, "127.0.0.1", 6379), lockConfig);
 ```
 
 For cluster Redis (JedisCluster)
 ```java
 JedisPoolConfig poolConfig = new JedisPoolConfig();
-config.setMinIdle(10);
-config.setMaxIdle(50);
-config.setMaxTotal(100);
-config.setMaxWaitMillis(1000);
+poolConfig.setMinIdle(10);
+poolConfig.setMaxIdle(50);
+poolConfig.setMaxTotal(100);
+poolConfig.setMaxWaitMillis(1000);
 
 JedisLockManager lockManager = new JedisLockManager(new JedisCluster(new HostAndPort("127.0.0.1", 6379), poolConfig), lockConfig);
 ```
@@ -43,15 +43,15 @@ JedisLockManager lockManager = new JedisLockManager(new JedisCluster(new HostAnd
 Requires number of redis nodes greater or equals 3 (should be odd number) and these nodes must be deployed independently, with no state between each node, and no master-slave copy or cluster management.
 ```Java
 JedisPoolConfig poolConfig = new JedisPoolConfig();
-	config.setMinIdle(10);
-	config.setMaxIdle(50);
-	config.setMaxTotal(100);
-	config.setMaxWaitMillis(1000);
+poolConfig.setMinIdle(10);
+poolConfig.setMaxIdle(50);
+poolConfig.setMaxTotal(100);
+poolConfig.setMaxWaitMillis(1000);
 
 JedisLockManager lockManager = new JedisLockManager(Arrays.asList(
-    new JedisPool(config, "127.0.0.1", 6379),
-    new JedisPool(config, "127.0.0.1", 6380),
-    new JedisPool(config, "127.0.0.1", 6381)), lockConfig);
+    new JedisPool(poolConfig, "127.0.0.1", 6379),
+    new JedisPool(poolConfig, "127.0.0.1", 6380),
+    new JedisPool(poolConfig, "127.0.0.1", 6381)), lockConfig);
 ```
 
 ## API Usage
@@ -81,30 +81,29 @@ try {
  * Try to acquire the lock, and return immediately if unable to acquire the lock (Non-blocking lock)
  */
 
-try {
-    if (lock.tryLock()) {
+if (lock.tryLock()) {
+    try {
 	//...
+    } catch () {
+        //...
+    } finally {
+        lock.unlock(); //Release lock
     }
-} catch () {
-    //...
-} finally {
-    lock.unlock(); //Release lock
 }
-//
 ```
 ```Java
 /*
  * Try to acquire lock with maximum waiting time
  */
 
-try {
-    if (lock.tryLock(1, TimeUnit.SECONDS)) {
+if (lock.tryLock(1, TimeUnit.SECONDS)) {
+    try {
 	//...
+    } catch () {
+        //...
+    } finally {
+        lock.unlock(); //Release lock
     }
-} catch () {
-    //...
-} finally {
-    lock.unlock(); //Release lock
 }
 ```
 ```Java
@@ -127,10 +126,10 @@ class JedisLockConfiguration {
     @Bean
     public JedisPool jedisPool() {
         JedisPoolConfig poolConfig = new JedisPoolConfig();
-        config.setMinIdle(10);
-        config.setMaxIdle(50);
-        config.setMaxTotal(100);
-        config.setMaxWaitMillis(1000);
+        poolConfig.setMinIdle(10);
+        poolConfig.setMaxIdle(50);
+        poolConfig.setMaxTotal(100);
+        poolConfig.setMaxWaitMillis(1000);
         return new JedisPool(poolConfig, "127.0.0.1", 6379);
     }
 
